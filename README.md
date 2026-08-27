@@ -2,8 +2,6 @@
 
 Rev. 2026.08.27 · MCU FDCAN2 · Classic CAN 2.0 (1 Mbit) / CAN-FD
 
-> 같은 내용을 꾸민 HTML 버전: [`AFT_RBY2_CAN_Protocol.html`](AFT_RBY2_CAN_Protocol.html) (다운받아 브라우저로 열기)
-
 AFT_RBY2-C 6축 힘/토크(F/T) 센서의 CAN 통신 프로토콜 문서입니다. 아래 표에 없는 명령/필드는
 존재하지 않습니다 — 펌웨어 소스(`app_freertos.c`, `fdcan.c`, `main.h`) 전수 대조로 작성했습니다.
 
