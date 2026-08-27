@@ -115,7 +115,7 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | IMU ADDITIONAL FRAME | `0x01`: OFF<br>`0x02`: 가속도만<br>`0x03`: 자이로만<br>`0x04`: 가속도+자이로 — 켜면 현재 데이터타입과 무관하게 매 전송주기마다 해당 프레임 추가 송신. `IMU_MPUXX50` 빌드에서만 동작(현재 기본 미탑재) |
 | TX CAN ID CONFIRM | `0x01`: TX CAN 2.0 ID 확인, 데이터 없음(DLC=0)으로 응답<br>`0x02`: TX CAN FD ID 확인, 데이터 없음(DLC=0)으로 응답 |
 | FACTORY RESET | RATE 100Hz(Default), Zero Bias(Default), TX CAN2.0 ID `0x230`(Default), TX CANFD ID `0x330`(Default) |
-| ERROR PACKET ON/OFF | `0x01`(또는 0x02 외 값): ON (기본) — 판정용 에러워드 2바이트를 데이터프레임 끝에 추가<br>`0x02`: OFF |
+| ERROR PACKET ON/OFF | `0x01`(또는 0x02 외 값): ON (기본) — 판정용 에러워드 2바이트를 데이터프레임 끝에 추가<br>`0x02`: OFF — `ERRPKT_ENABLE` 빌드에서만 동작(현재 기본 미탑재) |
 
 ### 3.3 Sensor Data Output
 
