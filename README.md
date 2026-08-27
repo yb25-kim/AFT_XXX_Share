@@ -1,151 +1,250 @@
-# AFT_RBY2-C — Communication Manual
+# Force/Torque Sensor User Manual — AFT_RBY2-C
 
-Rev. 2026.08.27 · MCU FDCAN2 · Classic CAN 2.0 (1 Mbit) / CAN-FD
+Rev. 2026.08.27
 
-AFT_RBY2-C 6축 힘/토크(F/T) 센서의 CAN 통신 프로토콜 문서입니다. 아래 표에 없는 명령/필드는
-존재하지 않습니다 — 펌웨어 소스(`app_freertos.c`, `fdcan.c`, `main.h`) 전수 대조로 작성했습니다.
+> 이 문서는 AIDIN ROBOTICS의 공식 AFT150-D50-C 매뉴얼([링크](https://aidin-robotics.gitbook.io/aidin-robotics-docs/index-manual/manual-ft-readme/manual-ft-aft150-d50))과
+> 동일한 형식으로 작성했습니다. 다만 이 저장소는 **펌웨어 소스 기준**으로 만든 문서라, 무게·치수·전압
+> 정격 같은 **기구/전기 스펙은 아직 확인되지 않아 비워두었습니다**(제품팀 확인 필요). CAN 통신 부분은
+> 펌웨어 소스(`app_freertos.c`, `fdcan.c`, `main.h`) 전수 대조로 작성해 정확도를 보장합니다.
+
+## Foreword
+
+본 매뉴얼은 AIDIN ROBOTICS AFT_RBY2-C 센서의 정상적인 사용을 위해 필요한 정보를 담고 있습니다.
+로봇 시스템을 사양 범위 밖에서 사용할 경우 제품의 기본 성능이 보장되지 않습니다. 사용 전 본
+매뉴얼을 주의 깊게 읽어 주십시오.
+
+**Notice**: 이 매뉴얼은 AIDIN ROBOTICS의 승인 없이 복사, 재생산 또는 공유할 수 없습니다.
+
+**Manufacturer**: AIDIN ROBOTICS
+
+**Safety Precautions**: 센서 설치는 반드시 해당 국가/지역 법규에 따라 자격을 갖춘 사람이
+수행해야 합니다.
 
 ## 목차
 
-- [0. 좌표계 (Coordinate Frame)](#0-좌표계-coordinate-frame)
-- [1. 통신](#1-통신)
-  - [1.1 CAN 사양](#11-can-사양)
-  - [1.2 Mode Setting](#12-mode-setting)
-  - [1.3 Force & Torque Data 변환](#13-force--torque-data-변환)
-  - [1.4 Special Command](#14-special-command)
-- [2. 주의사항](#2-주의사항)
+- [1. Product Overview](#1-product-overview)
+  - [1.1 AFT_RBY2-C](#11-aft_rby2-c)
+  - [1.2 Key Features](#12-key-features)
+  - [1.3 Specifications](#13-specifications)
+- [2. Installation Guide](#2-installation-guide)
+  - [2.1 Axes and Drawings](#21-axes-and-drawings)
+  - [2.2 Mounting / Cable](#22-mounting--cable)
+- [3. Communication](#3-communication)
+  - [3.1 Default CAN Setting](#31-default-can-setting)
+  - [3.2 User Commands](#32-user-commands)
+  - [3.3 Sensor Data Output](#33-sensor-data-output)
+- [4. Additional Information](#4-additional-information)
+- [5. 주의사항 (Known Issues)](#5-주의사항-known-issues)
 
-## 0. 좌표계 (Coordinate Frame)
+## 1. Product Overview
+
+### 1.1 AFT_RBY2-C
+
+AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capacitive) 방식을 사용합니다.
+로봇 손목/관절 등에 장착해 접촉력을 실시간으로 측정하는 용도입니다.
+
+### 1.2 Key Features
+
+- Smart 6-axis force/torque sensor
+- All-in-one sensor (별도 앰프 불필요)
+- 디지털 출력 통신 (CAN, CAN-FD)
+- 옵션: IMU(가속도/자이로) 부가 데이터 — [3.2](#32-user-commands) 참조
+- CAN IAP 부트로더 내장 — 케이블 하나로 펌웨어 현장 업데이트 가능
+
+### 1.3 Specifications
+
+| Index | Unit | Value |
+|---|---|---|
+| Operating voltage | VDC | *(확인 필요)* |
+| Max. safe excitation voltage | VDC | *(확인 필요)* |
+| Nominal force range (F_XYZN) | N | *(확인 필요)* |
+| Nominal torque range (M_XYZN) | Nm | *(확인 필요)* |
+| Limit force (F_XYZL) | N | *(확인 필요)* |
+| Limit torque (M_XYZL) | Nm | *(확인 필요)* |
+| Dimensions | mm | *(확인 필요)* |
+| Weight | g | *(확인 필요)* |
+| Temperature | °C | *(확인 필요)* |
+| Sample rate | Hz | 100 / 250 / 500 / 1000 (선택 가능, [3.2](#32-user-commands)) |
+| Interfaces | — | CAN 1 Mbit, CAN-FD nominal 1M / data 최대 4M |
+| MCU | — | STM32H523CET7 (Cortex-M33) |
+
+> 힘/토크 정격·치수·중량 등 기구 스펙은 이 저장소(펌웨어)에 없는 정보라 비워뒀습니다. 필요하시면
+> 제품팀 확인 후 채워드리겠습니다.
+
+## 2. Installation Guide
+
+### 2.1 Axes and Drawings
 
 ![AFT_RBY2-C 좌표계](img/AFT_RBY2_coordinate_frame.png)
 
-센서 원점(O)은 상판 중심, 좌측 도면 기준 **X(적색)·Y(녹색)·Z(청색)**. CAN으로 나오는
-Fx/Fy/Fz, Tx/Ty/Tz는 전부 이 좌표계 기준입니다. 우측은 하단 커넥터 핀 배치 참고용입니다.
+센서 원점은 상판 중심, **X(적색)·Y(녹색)·Z(청색)**. CAN으로 나오는 Fx/Fy/Fz, Tx/Ty/Tz는
+전부 이 좌표계 기준입니다. 우측 그림은 하단 커넥터/체결 구조 참고용입니다.
 
-## 1. 통신
+### 2.2 Mounting / Cable
 
-### 1.1 CAN 사양
+*(체결 토크, 케이블 길이·핀맵 등은 기구 도면 확인 후 추가 예정)*
 
-| 항목 | 값 |
-|---|---|
-| 인터페이스 | FDCAN2, 표준 ID(11bit) |
-| 비트레이트 | 클래식 CAN 1 Mbit, CAN-FD nominal 1M / data 최대 4M(FDSETTING 값에 따라 다름) |
-| 명령 수신 ID (Rx) | `0x220`(CAN 2.0) / `0x320`(CAN FD) |
-| 측정 송신 기본 ID (Tx) | `0x230`(CAN 2.0, `can20ID`) / `0x330`(CAN FD, `canFDID`) |
-| 부트로더 UDS ID | `0x7A0`(요청) / `0x7A8`(응답) — 별도 CAN IAP 부트로더 문서 참고 |
+## 3. Communication
 
-### 1.2 Mode Setting
+### 3.1 Default CAN Setting
 
-명령 프레임은 8바이트, **Data[0]/Data[1]은 항상 "현재 센서 TX CAN ID"(LSB/MSB)** 여야 명령이
-받아들여집니다(불일치 시 무시). 아래 표의 `RX CAN ID`로 프레임을 보냅니다.
+- 출력 레이트는 100Hz~1000Hz로 변경 가능 — 방법은 [3.2](#32-user-commands) 참조
+- **CAN 2.0**
+  - Nominal bitrate: 1 Mbps
+  - RX ID: `0x220`(명령), `0x230`(측정 기본, 변경 가능)
+- **CAN-FD**
+  - Nominal bitrate: 1 Mbps / Data bitrate: 최대 4 Mbps(BRS, FD Parameter 설정값에 따름)
+  - RX ID: `0x320`(명령), `0x330`(측정 기본, 변경 가능)
+- 부트로더 UDS ID: `0x7A0`(요청) / `0x7A8`(응답) — CAN IAP 펌웨어 업데이트용, 별도 문서 참고
 
-| RX CAN ID | Data[0] | Data[1] | Data[2] | Data[3] | Data[4] | Data[5] | Description |
-|---|---|---|---|---|---|---|---|
-| `0x220` `0x320` | current TX CAN ID (LSB) | current TX CAN ID (MSB) | `0x01` | `0x01`(CAN2.0 ID) / `0x02`(CAN FD ID) | 새 ID (LSB) | 새 ID (MSB) | **Sensor TX CAN ID Setting** — 0x7FF 초과 시 기본값(0x230/0x330)으로 복귀 |
-| `0x220` `0x320` | current TX CAN ID (LSB) | current TX CAN ID (MSB) | `0x02` | — | — | — | **Bias (Zero Setting)** |
-| `0x220` `0x320` | current TX CAN ID (LSB) | current TX CAN ID (MSB) | `0x03` | `0x01`~`0x06` | — | — | **Transmitting Data** — 6가지 모드, [1.3](#13-force--torque-data-변환) 참조 |
-| `0x220` `0x320` | current TX CAN ID (LSB) | current TX CAN ID (MSB) | `0x04` | `0x01`(CAN2.0) / `0x02`(CAN FD) / `0x03`(CAN FD BRS) | — | — | **CAN Mode Setting** — 전환 시 전송 멈춤(재전송 시작 명령 별도 필요) |
-| `0x220` `0x320` | current TX CAN ID (LSB) | current TX CAN ID (MSB) | `0x05` | `0x01`(100Hz) / `0x02`(250Hz) / `0x03`(500Hz) / `0x04`(1000Hz) | — | — | **Sample rate setting** |
-| `0x220` `0x320` | current TX CAN ID (LSB) | current TX CAN ID (MSB) | `0x06` | `0x01`~`0x04` (FD 비트타이밍 프리셋) | — | — | **FD Parameter setting** — ⚠ 재부팅 후 반영, [2장](#2-주의사항) 참조 |
-| `0x220` `0x320` | current TX CAN ID (LSB) | current TX CAN ID (MSB) | `0x09` | `0x01`(OFF) / `0x02`(ON) | — | — | **IMU Additional Frame** *(신규, IMU_MPUXX50 빌드에서만)* — [1.3.5](#135-imu-additional-frame-신규) 참조 |
+### 3.2 User Commands
 
-> `0x07`(CLEARERROR), `0x08`(GETSTATUS)는 상수만 정의돼 있고 실제 처리 코드가 없습니다 — 보내도 무시됩니다.
+- **RX CAN IDs**: `0x220`(CAN 2.0), `0x320`(CAN FD)
+- **TX CAN IDs**: 기본값 `0x230`(CAN 2.0), `0x330`(CAN FD). 아래 표의 "current TX CAN ID"는
+  이 값을 LSB, MSB 순서로 2바이트에 넣은 것입니다 (기본값이면 `[0x30, 0x02]` 또는 `[0x30, 0x03]`).
 
-#### 1.2.1 Transmitting Data 옵션 (Data[3], SID=0x03)
+**Data Transmission Procedure**
 
-| Data[3] | 이름 | 내용 |
-|---|---|---|
-| `0x01` | INT, 온도보상 없음 | [1.3.1](#131-int-transmitting-mode) |
-| `0x02` | INT, 온도보상 포함 | [1.3.1](#131-int-transmitting-mode) |
-| `0x03` | INT Combined, 온도보상 없음 (FD 전용) | [1.3.3](#133-int-combined-transmitting-mode-fd-only) |
-| `0x04` | INT Combined, 온도보상 포함 (FD 전용) | [1.3.3](#133-int-combined-transmitting-mode-fd-only) |
-| `0x05` | Float Combined, 온도보상 없음 (FD 전용) | [1.3.4](#134-float-combined-transmitting-mode-fd-only) |
-| `0x06` | Float Combined, 온도보상 포함 (FD 전용) | [1.3.4](#134-float-combined-transmitting-mode-fd-only) |
+센서는 전원 인가만으로 자동 출력하지 않습니다. 데이터를 받으려면 **CAN MODE 설정 명령**을 보낸
+뒤 **TRANSMIT DATA 요청 명령**을 순서대로 보내야 합니다.
 
-### 1.3 Force & Torque Data 변환
-
-모든 데이터는 **little-endian**(LSB 먼저)입니다.
-
-#### 1.3.1 INT Transmitting Mode
-
-| TX CAN ID | DLC | data[0~5] | Description |
-|---|---|---|---|
-| `can20ID`+0 / `canFDID`+0 | 6 (ERRPKT ON 시 8) | Fx(2B) · Fy(2B) · Fz(2B) | 힘 3축, int16 |
-
-계산식: `Force[N] = raw_int16 / 100`
-
-#### 1.3.2 Torque INT Transmitting Mode
-
-| TX CAN ID | DLC | data[0~5] | Description |
-|---|---|---|---|
-| `can20ID`+1 / `canFDID`+1 | 6 (ERRPKT ON 시 8) | Tx(2B) · Ty(2B) · Tz(2B) | 토크 3축, int16 |
-
-계산식: `Torque[Nm] = raw_int16 / 1000`
-
-#### 1.3.3 INT Combined Transmitting Mode (FD only)
-
-| TX CAN ID | DLC | data[0~11] | Description |
-|---|---|---|---|
-| `canFDID`+2 | 12 (ERRPKT ON 시 16) | Fx·Fy·Fz·Tx·Ty·Tz (각 2B) | 6축 한 프레임 |
-
-계산식은 1.3.1/1.3.2와 동일(Force/100, Torque/1000). ERRPKT ON 시 `data[12~13]`에 에러워드 2B 추가(DLC16).
-
-#### 1.3.4 Float Combined Transmitting Mode (FD only)
-
-| TX CAN ID | DLC | data[0~23] | Description |
-|---|---|---|---|
-| `canFDID`+2 | 24 (ERRPKT ON 시 32) | Fx·Fy·Fz·Tx·Ty·Tz (각 4B, IEEE754 float32) | 6축 한 프레임, 물리값 그대로(스케일 없음) |
-
-호스트에서 4바이트(little-endian)를 float로 복원:
-
-```c
-float ReadFloatLE(const uint8_t *p)
-{
-    uint32_t u = (uint32_t)p[0] | ((uint32_t)p[1] << 8) |
-                 ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
-    float f;
-    memcpy(&f, &u, sizeof(f));
-    return f;   /* Fx = ReadFloatLE(&data[0]); Fy = ReadFloatLE(&data[4]); ... */
-}
+예시(기본 TX ID `0x230` 기준, CAN 2.0 모드로 온도보상 포함 INT 출력 시작):
+```
+CAN MODE:      ID 0x220,  Data: 0x30 0x02 0x04 0x01
+TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 ```
 
-ERRPKT ON 시 `data[24~25]`에 에러워드 2B 추가(DLC32).
+**명령 목록**
 
-#### 1.3.5 IMU Additional Frame (신규)
+| COMMAND | RX CAN ID | Data[0] | Data[1] | Data[2] | Data[3]<br>(아래 표 참조) | Data[4] | Data[5] |
+|---|---|---|---|---|---|---|---|
+| SENSOR TX CAN ID SET | `0x220` `0x230` | current TX CAN ID(LSB) | current TX CAN ID(MSB) | `0x01` | `0x01`(CAN2.0) / `0x02`(CAN FD) | TX CAN ID(LSB) | TX CAN ID(MSB) |
+| BIAS | 〃 | 〃 | 〃 | `0x02` | — | — | — |
+| TRANSMIT DATA | 〃 | 〃 | 〃 | `0x03` | `0x01`~`0x06` | — | — |
+| CAN MODE | 〃 | 〃 | 〃 | `0x04` | `0x01`~`0x03` | — | — |
+| SAMPLE RATE SET | 〃 | 〃 | 〃 | `0x05` | `0x01`~`0x04` | — | — |
+| FD PARAMETER SET | 〃 | 〃 | 〃 | `0x06` | `0x01`~`0x04` | — | — |
+| **IMU ADDITIONAL FRAME** *(AFT_RBY2-C 신규)* | 〃 | 〃 | 〃 | `0x09` | `0x01`(OFF) / `0x02`(ON) | — | — |
+| TX CAN ID CONFIRM | `0x220` `0x230` | `0xFF` | `0xFE` | `0xFC` | `0x01`(CAN2.0) / `0x02`(CAN FD) | — | — |
+| FACTORY RESET | 〃 | `0xFF` | `0xFE` | `0xFD` | — | — | — |
+| ERROR PACKET ON/OFF *(AFT_RBY2-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
+| ENTER BOOTLOADER *(AFT_RBY2-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFB` | `0x5A` | — | — |
+| LOG DUMP *(AFT_RBY2-C 신규, 8바이트 매직)* | 〃 | `0xF1` | `0xF2` | `0xF3` | `0xF4`(Data[4]=`0xFC` Data[5]=`0xFD` Data[6]=`0xFE` Data[7]=`0xFF`) | — | — |
+| CLEAR ERROR *(정의만 있음)* | 〃 | 〃 | 〃 | `0x07` | — | — | — |
+| GET STATUS *(정의만 있음)* | 〃 | 〃 | 〃 | `0x08` | — | — | — |
 
-`IMU_MPUXX50` 빌드 토글이 켜져 있을 때만 존재합니다(현재 기본 `DISable`). [Mode Setting](#12-mode-setting)의
-`0x09` 명령으로 켜고 끄며, 켜면 현재 선택된 F/T 데이터타입과 무관하게 매 전송주기마다 아래 2프레임이
-추가로 나갑니다. MPU-9250(I2C1)의 raw 값을 물리단위 환산 없이 그대로 싣습니다.
+> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT_RBY2-C에는 없습니다. `CLEAR ERROR`(0x07)와
+> `GET STATUS`(0x08)는 상수만 정의돼 있고 실제 처리 코드가 없어 **보내도 무시됩니다**.
 
-| TX CAN ID | DLC | data[0~5] | Description |
-|---|---|---|---|
-| `can20ID`+3 / `canFDID`+3 | 8 | AccelX(2B) · AccelY(2B) · AccelZ(2B) · 패딩(2B) | 가속도, raw int16 |
-| `can20ID`+4 / `canFDID`+4 | 8 | GyroX(2B) · GyroY(2B) · GyroZ(2B) · 패딩(2B) | 자이로, raw int16 |
+**COMMAND / Data[3] Description**
 
-스케일(`MPUXX50_Init()` 고정 레인지 기준): 가속도 ±16g = 2048 LSB/g, 자이로 ±2000dps = 16.4 LSB/(deg/s).
+| COMMAND | Data[3] Description |
+|---|---|
+| SENSOR TX CAN ID SET | `0x01`: TX CAN 2.0 ID SET ex) ID(LSB)=0x23, ID(MSB)=0x01 → Resulting ID `0x123`<br>`0x02`: TX CAN FD ID SET ex) ID(LSB)=0x56, ID(MSB)=0x04 → Resulting ID `0x456` |
+| BIAS | Bias(Zero Setting) |
+| TRANSMIT DATA | `0x01`: INT, 온도보상 없음<br>`0x02`: INT, 온도보상 포함<br>`0x03`: INT Combined, 온도보상 없음 (CAN 2.0 미지원, FD 전용)<br>`0x04`: INT Combined, 온도보상 포함 (FD 전용)<br>`0x05`: Float Combined, 온도보상 없음 (FD 전용)<br>`0x06`: Float Combined, 온도보상 포함 (FD 전용) |
+| CAN MODE | `0x01`: CAN 2.0 모드<br>`0x02`: CAN FD 모드 BRS OFF<br>`0x03`: CAN FD 모드 BRS ON |
+| SAMPLE RATE SET | `0x01`: 100Hz (Default)<br>`0x02`: 250Hz<br>`0x03`: 500Hz<br>`0x04`: 1000Hz |
+| FD PARAMETER SET | `0x01`: FDSET1<br>`0x02`: FDSET2<br>`0x03`: FDSET3 (Default)<br>`0x04`: FDSET4<br>⚠ **즉시 반영되지 않음** — [5장](#5-주의사항-known-issues) 참조 |
+| IMU ADDITIONAL FRAME | `0x01`: OFF<br>`0x02`: ON — 켜면 현재 데이터타입과 무관하게 매 전송주기마다 가속도/자이로 프레임 추가 송신. `IMU_MPUXX50` 빌드에서만 동작(현재 기본 미탑재) |
+| TX CAN ID CONFIRM | `0x01`: TX CAN 2.0 ID 확인, 데이터 없음(DLC=0)으로 응답<br>`0x02`: TX CAN FD ID 확인, 데이터 없음(DLC=0)으로 응답 |
+| FACTORY RESET | FDSET3(Default), RATE 100Hz(Default), Zero Bias(Default), TX CAN2.0 ID `0x230`(Default), TX CANFD ID `0x330`(Default) |
+| ERROR PACKET ON/OFF | `0x01`(또는 0x02 외 값): ON (기본) — 판정용 에러워드 2바이트를 데이터프레임 끝에 추가<br>`0x02`: OFF |
+| ENTER BOOTLOADER | 고정 매직 `0x5A` — TAMP 핸드셰이크 기록 후 리셋, CAN IAP 부트로더로 진입 |
+| LOG DUMP | 고정 8바이트 매직(`F1 F2 F3 F4 FC FD FE FF`) — 전송 멈추고 저장된 로그 전량을 CAN으로 덤프 |
 
-### 1.4 Special Command
+### 3.3 Sensor Data Output
 
-Data[0]/[1]이 TX CAN ID가 아니라 **고정 매직 바이트**인 명령들로, ID 일치 검사 없이 별도로 처리됩니다.
+> 센서 신호 안정화를 위해 **약 30분** 워밍업을 권장합니다. 사용 전 **최소 10분**은 센서를 켜 둔
+> 채로 두십시오 — 초반 10분간 출력 데이터가 흔들릴 수 있습니다.
+>
+> 모든 데이터 조합은 **little-endian**입니다 (아래 그림처럼 낮은 바이트가 낮은 주소/먼저 오는 바이트).
 
-| RX CAN ID | Data[0] | Data[1] | Data[2] | Data[3] | Description |
-|---|---|---|---|---|---|
-| `0x220` `0x320` | `0xFF` | `0xFE` | `0xFD` | — | **Factory Reset** — 설정 전체를 flash 기본값으로 초기화 |
-| `0x220` `0x320` | `0xFF` | `0xFE` | `0xFC` | `0x01`(CAN2.0) / `0x02`(CAN FD) | **Confirm ID** — 지정 모드의 실제 TX ID로 빈 프레임(DLC0) 응답 |
-| `0x220` `0x320` | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | **Error Packet On/Off** — flash 저장. `ERRPKT_ENABLE` 빌드에서만 의미있음 |
-| `0x220` `0x320` | `0xFF` | `0xFE` | `0xFB` | `0x5A` | **Enter Bootloader** — CAN IAP 부트로더 진입(핸드셰이크 후 리셋). `USE_BOOTLOADER` 빌드에서만 |
-| `0x220` `0x320` | `0xF1` | `0xF2` | `0xF3` ... | `0xF4 0xFC 0xFD 0xFE 0xFF`(총 8바이트 매직) | **Log Dump** — 전송 멈추고 저장된 로그 전량 CAN 덤프 |
+#### Force INT Transmitting mode (Data[2]=0x03, Data[3]=1 or 2)
 
-## 2. 주의사항
+| INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] |
+|---|---|---|---|---|---|---|---|---|
+| FINT | 2.0: `can20ID`+0<br>FD: `canFDID`+0 | 6 | Fx(LSB) | Fx(MSB) | Fy(LSB) | Fy(MSB) | Fz(LSB) | Fz(MSB) |
+
+- `Fx Output = Fx(MSB)*256 + Fx(LSB)` (Fy, Fz 동일)
+- `Force[N] = Force Output / 100`
+- 최종 계산값은 **16bit 정수**로 캐스팅해서 씁니다.
+
+#### Torque INT Transmitting mode (Data[2]=0x03, Data[3]=1 or 2)
+
+| INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] |
+|---|---|---|---|---|---|---|---|---|
+| TINT | 2.0: `can20ID`+1<br>FD: `canFDID`+1 | 6 | Tx(LSB) | Tx(MSB) | Ty(LSB) | Ty(MSB) | Tz(LSB) | Tz(MSB) |
+
+- `Tx Output = Tx(MSB)*256 + Tx(LSB)` (Ty, Tz 동일)
+- `Torque[Nm] = Torque Output / 1000`
+- 최종 계산값은 **16bit 정수**로 캐스팅해서 씁니다.
+
+#### Combined INT Transmitting mode (Data[2]=0x03, Data[3]=3 or 4, FD only)
+
+| INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] |
+|---|---|---|---|---|---|---|---|---|
+| CINT | `canFDID`+2 | 12 | Fx(LSB) | Fx(MSB) | Fy(LSB) | Fy(MSB) | Fz(LSB) | Fz(MSB) |
+
+| INDEX | data[6] | data[7] | data[8] | data[9] | data[10] | data[11] |
+|---|---|---|---|---|---|---|
+| CINT | Tx(LSB) | Tx(MSB) | Ty(LSB) | Ty(MSB) | Tz(LSB) | Tz(MSB) |
+
+계산식은 FINT/TINT와 동일 (`/100`, `/1000`, 16bit 정수 캐스팅).
+
+#### Combined Float Transmitting mode (Data[2]=0x03, Data[3]=5 or 6, FD only)
+
+| INDEX | TX CAN ID | DLC | data[0~3] | data[4~7] | data[8~11] | data[12~15] | data[16~19] | data[20~23] |
+|---|---|---|---|---|---|---|---|---|
+| CFLOAT | `canFDID`+2 | 24 | Fx | Fy | Fz | Tx | Ty | Tz |
+
+```c
+uint32_t Fx_Raw = (Fx(MSB) << 24) | (Fx(3rd) << 16) | (Fx(2nd) << 8) | (Fx(LSB));
+float    Fx_Output = *(float *)&Fx_Raw;
+/* Fy, Fz, Tx, Ty, Tz 도 동일하게 반복 */
+
+Force[N]  = Force Output;   /* 이미 물리값이라 나눗셈 없음 */
+Torque[Nm] = Torque Output;
+```
+
+최종 계산값은 **float**로 캐스팅해서 씁니다.
+
+#### IMU Additional Frame (Data[2]=0x09, AFT_RBY2-C 신규 — [3.2](#32-user-commands) `0x02` ON일 때만)
+
+| INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] | data[6~7] |
+|---|---|---|---|---|---|---|---|---|---|
+| AIMU (가속도) | 2.0: `can20ID`+3<br>FD: `canFDID`+3 | 8 | AccelX(LSB) | AccelX(MSB) | AccelY(LSB) | AccelY(MSB) | AccelZ(LSB) | AccelZ(MSB) | 패딩(0) |
+| GIMU (자이로) | 2.0: `can20ID`+4<br>FD: `canFDID`+4 | 8 | GyroX(LSB) | GyroX(MSB) | GyroY(LSB) | GyroY(MSB) | GyroZ(LSB) | GyroZ(MSB) | 패딩(0) |
+
+- 값은 raw int16 그대로(물리단위 환산 없음). 스케일: 가속도 ±16g = 2048 LSB/g, 자이로 ±2000dps = 16.4 LSB/(deg/s)
+- 현재 선택된 F/T 데이터타입([3.2](#32-user-commands) Data[2]=0x03)과 무관하게 독립적으로 켜고 끕니다.
+
+## 4. Additional Information
+
+### 4.1 USB-to-CAN interfaces
+
+PCAN-USB FD Device(USB to CAN FD)를 사용합니다. 다른 CAN 보드를 쓰셔도 되지만, 샘플
+프로그램을 그대로 쓰려면 peak-system 컨버터를 권장합니다.
+
+- Device Item number: IPEH-004022 — https://www.peak-system.com/PCAN-USB-FD.365.0.html?&L=1
+- PCAN-View (Windows 표시용 소프트웨어) — https://www.peak-system.com/PCAN-View.242.0.html?&L=1
+- CAN 데이터를 정상적으로 받으려면 CAN H / CAN L 사이에 **120Ω 종단저항**이 필요합니다.
+
+## 5. 주의사항 (Known Issues)
 
 > **FD Parameter Setting(`0x06`)은 즉시 반영되지 않습니다.**
 > 명령을 받으면 값만 저장하고, 실제 FDCAN 재설정 호출은 현재 코드에서 비활성화돼 있습니다.
 > **다음 재부팅 시** 저장된 값이 한 번 적용되는 구조입니다 — 런타임에 바로 타이밍이 바뀌길
 > 기대하면 안 됩니다.
 
-> **`0x07`(CLEARERROR) / `0x08`(GETSTATUS)는 이름만 있고 미구현입니다.**
+> **`CLEAR ERROR`(0x07) / `GET STATUS`(0x08)는 이름만 있고 미구현입니다.**
 > 상수 정의와 주석만 있고 대응하는 처리 코드가 없어 보내도 무시됩니다. 에러패킷 기능
 > (`ERRPKT_ENABLE`, 현재 `DISable`)이 켜지면서 같이 구현될 예정으로 추정 — 실사용 전 확인 필수.
 
-이 문서는 2026-08-27 기준 펌웨어 소스 전수 대조로 작성했습니다. 코드가 바뀌면 이 문서도 같이
-갱신해야 합니다.
+> **`IMU ADDITIONAL FRAME`은 기본 빌드에 포함되지 않습니다.**
+> `IMU_MPUXX50` 빌드 토글이 꺼진(`DISable`) 상태에선 이 명령/프레임 자체가 존재하지 않습니다.
+
+---
+
+이 문서는 2026-08-27 기준 펌웨어 소스 전수 대조로 작성했습니다(제품/기구 스펙 제외). 코드가
+바뀌면 이 문서도 같이 갱신해야 합니다.
