@@ -103,10 +103,6 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | FACTORY RESET | 〃 | `0xFF` | `0xFE` | `0xFD` | — | — | — |
 | ERROR PACKET ON/OFF *(AFT_XXX-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
 
-> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT_XXX-C에는 없습니다. `FD PARAMETER SET`(0x06),
-> `CLEAR ERROR`(0x07), `GET STATUS`(0x08)는 상수만 정의돼 있고 실제 처리 코드가 없어 **보내도
-> 무시됩니다**.
-
 **COMMAND / Data[3] Description**
 
 | COMMAND | Data[3] Description |
