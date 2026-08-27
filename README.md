@@ -101,7 +101,7 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | **IMU ADDITIONAL FRAME** *(New to AFT_XXX-C)* | 〃 | 〃 | 〃 | `0x09` | `0x01`~`0x04` | — | — |
 | TX CAN ID CONFIRM | `0x220` `0x230` | `0xFF` | `0xFE` | `0xFC` | `0x01`(CAN2.0) / `0x02`(CAN FD) | — | — |
 | FACTORY RESET | 〃 | `0xFF` | `0xFE` | `0xFD` | — | — | — |
-| ERROR PACKET ON/OFF *(New to AFT_XXX-C)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
+| ERROR PACKET ON/OFF *(New to AFT_XXX-C, Not yet implemented)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
 
 **COMMAND / Data[3] Description**
 
