@@ -198,4 +198,4 @@ PCAN-USB FD Device(USB to CAN FD)를 사용합니다. 다른 CAN 보드를 쓰�
 
 ## Revision History
 
-- [Rev. 2026.08.27 18:46](https://github.com/yb25-kim/AFT_RBY2_Share/blob/6808453cbb9887d049208d317094f287425fd2c3/README.md) (초기 버전)
+- [Rev. 2026.08.27 18:46](https://github.com/yb25-kim/AFT_XXX_Share/blob/6808453cbb9887d049208d317094f287425fd2c3/README.md) (초기 버전)
