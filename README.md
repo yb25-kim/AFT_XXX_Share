@@ -1,6 +1,6 @@
 # Force/Torque Sensor User Manual — AFT_RBY2-C
 
-Rev. 2026.08.27
+Rev. 2026.08.27 (초기 버전)
 
 ## Foreword
 
