@@ -1,10 +1,10 @@
-# Force/Torque Sensor User Manual — AFT_RBY2-C
+# Force/Torque Sensor User Manual — AFT-C
 
 Rev. 2026.08.27 (초기 버전)
 
 ## Foreword
 
-본 매뉴얼은 AIDIN ROBOTICS AFT_RBY2-C 센서의 정상적인 사용을 위해 필요한 정보를 담고 있습니다.
+본 매뉴얼은 AIDIN ROBOTICS AFT-C 센서의 정상적인 사용을 위해 필요한 정보를 담고 있습니다.
 로봇 시스템을 사양 범위 밖에서 사용할 경우 제품의 기본 성능이 보장되지 않습니다. 사용 전 본
 매뉴얼을 주의 깊게 읽어 주십시오.
 
@@ -18,9 +18,8 @@ Rev. 2026.08.27 (초기 버전)
 ## 목차
 
 - [1. Product Overview](#1-product-overview)
-  - [1.1 AFT_RBY2-C](#11-aft_rby2-c)
+  - [1.1 AFT-C](#11-aft-c)
   - [1.2 Key Features](#12-key-features)
-  - [1.3 Specifications](#13-specifications)
 - [2. Installation Guide](#2-installation-guide)
   - [2.1 Axes and Drawings](#21-axes-and-drawings)
   - [2.2 Mounting / Cable](#22-mounting--cable)
@@ -32,7 +31,7 @@ Rev. 2026.08.27 (초기 버전)
 
 ## 1. Product Overview
 
-### 1.1 AFT_RBY2-C
+### 1.1 AFT-C
 
 AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capacitive) 방식을 사용합니다.
 로봇 손목/관절 등에 장착해 접촉력을 실시간으로 측정하는 용도입니다.
@@ -45,35 +44,11 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 - 옵션: IMU(가속도/자이로) 부가 데이터 — [3.2](#32-user-commands) 참조
 - CAN IAP 부트로더 내장 — 케이블 하나로 펌웨어 현장 업데이트 가능
 
-### 1.3 Specifications
-
-| Index | Unit | Value |
-|---|---|---|
-| Operating voltage | VDC | 4~36 |
-| Max. safe excitation voltage | VDC | 40 |
-| Nominal force range (F_XYZN) | N | 500 |
-| Nominal torque range (M_XYZN) | Nm | 25 |
-| Limit force (F_XYZL) | N | *(확인 필요)* |
-| Limit torque (M_XYZL) | Nm | *(확인 필요)* |
-| Accuracy | %R.C. | *(확인 필요)* |
-| Non-linearity | %R.C. | *(확인 필요)* |
-| Hysteresis | %R.C. | *(확인 필요)* |
-| Repeatability | %R.C. | *(확인 필요)* |
-| Crosstalk | %R.C. | *(확인 필요)* |
-| Resolution (Force) | N | *(확인 필요)* |
-| Resolution (Torque) | Nm | *(확인 필요)* |
-| Dimensions | mm | D88 x H32.5 |
-| Weight | g | 350 |
-| Temperature | °C | *(확인 필요)* |
-| Sample rate | Hz | 100 / 250 / 500 / 1000 (선택 가능, [3.2](#32-user-commands)) |
-| Interfaces | — | CAN 1 Mbit, CAN-FD nominal 1M / data 최대 4M |
-| MCU | — | STM32H523CET7 (Cortex-M33) |
-
 ## 2. Installation Guide
 
 ### 2.1 Axes and Drawings
 
-![AFT_RBY2-C 좌표계](img/AFT_RBY2_coordinate_frame.png)
+![AFT-C 좌표계](img/AFT_coordinate_frame.png)
 
 센서 원점은 상판 중심, **X(적색)·Y(녹색)·Z(청색)**. CAN으로 나오는 Fx/Fy/Fz, Tx/Ty/Tz는
 전부 이 좌표계 기준입니다. 우측 그림은 하단 커넥터/체결 구조 참고용입니다.
@@ -103,10 +78,10 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 
 **Data Transmission Procedure**
 
-AFT_RBY2-C는 전원 인가 직후 **별도 명령 없이 기본값(CAN 2.0, INT 온도보상 포함, TX ID `0x230`)으로
+AFT-C는 전원 인가 직후 **별도 명령 없이 기본값(CAN 2.0, INT 온도보상 포함, TX ID `0x230`)으로
 자동 출력을 시작**합니다. 다른 모드/데이터타입으로 바꾸려면 **CAN MODE 설정 명령**을 보낸 뒤
-**TRANSMIT DATA 요청 명령**을 순서대로 보내면 됩니다 — CAN MODE 명령을 보내면 출력이 일단 멈추고,
-TRANSMIT DATA를 다시 보내야 재개됩니다.
+**TRANSMIT DATA 요청 명령**을 순서대로 보내면 됩니다 — **CAN MODE 명령은 데이터 출력을 정지(stop)시키는
+기능을 함께 가지고 있어**, 이 명령을 보내면 출력이 일단 멈추고 TRANSMIT DATA를 다시 보내야 재개됩니다.
 
 예시(기본 TX ID `0x230` 기준, CAN 2.0 모드로 온도보상 포함 INT 출력 다시 시작):
 ```
@@ -121,14 +96,14 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | SENSOR TX CAN ID SET | `0x220` `0x230` | current TX CAN ID(LSB) | current TX CAN ID(MSB) | `0x01` | `0x01`(CAN2.0) / `0x02`(CAN FD) | TX CAN ID(LSB) | TX CAN ID(MSB) |
 | BIAS | 〃 | 〃 | 〃 | `0x02` | — | — | — |
 | TRANSMIT DATA | 〃 | 〃 | 〃 | `0x03` | `0x01`~`0x06` | — | — |
-| CAN MODE | 〃 | 〃 | 〃 | `0x04` | `0x01`~`0x03` | — | — |
+| CAN MODE *(데이터 출력 정지 동반)* | 〃 | 〃 | 〃 | `0x04` | `0x01`~`0x03` | — | — |
 | SAMPLE RATE SET | 〃 | 〃 | 〃 | `0x05` | `0x01`~`0x04` | — | — |
-| **IMU ADDITIONAL FRAME** *(AFT_RBY2-C 신규)* | 〃 | 〃 | 〃 | `0x09` | `0x01`(OFF) / `0x02`(ON) | — | — |
+| **IMU ADDITIONAL FRAME** *(AFT-C 신규)* | 〃 | 〃 | 〃 | `0x09` | `0x01`~`0x04` | — | — |
 | TX CAN ID CONFIRM | `0x220` `0x230` | `0xFF` | `0xFE` | `0xFC` | `0x01`(CAN2.0) / `0x02`(CAN FD) | — | — |
 | FACTORY RESET | 〃 | `0xFF` | `0xFE` | `0xFD` | — | — | — |
-| ERROR PACKET ON/OFF *(AFT_RBY2-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
+| ERROR PACKET ON/OFF *(AFT-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
 
-> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT_RBY2-C에는 없습니다. `FD PARAMETER SET`(0x06),
+> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT-C에는 없습니다. `FD PARAMETER SET`(0x06),
 > `CLEAR ERROR`(0x07), `GET STATUS`(0x08)는 상수만 정의돼 있고 실제 처리 코드가 없어 **보내도
 > 무시됩니다**.
 
@@ -139,9 +114,9 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | SENSOR TX CAN ID SET | `0x01`: TX CAN 2.0 ID SET ex) ID(LSB)=0x23, ID(MSB)=0x01 → Resulting ID `0x123`<br>`0x02`: TX CAN FD ID SET ex) ID(LSB)=0x56, ID(MSB)=0x04 → Resulting ID `0x456` |
 | BIAS | Bias(Zero Setting) |
 | TRANSMIT DATA | `0x01`: INT, 온도보상 없음<br>`0x02`: INT, 온도보상 포함<br>`0x03`: INT Combined, 온도보상 없음 (CAN 2.0 미지원, FD 전용)<br>`0x04`: INT Combined, 온도보상 포함 (FD 전용)<br>`0x05`: Float Combined, 온도보상 없음 (FD 전용)<br>`0x06`: Float Combined, 온도보상 포함 (FD 전용) |
-| CAN MODE | `0x01`: CAN 2.0 모드<br>`0x02`: CAN FD 모드 BRS OFF<br>`0x03`: CAN FD 모드 BRS ON |
+| CAN MODE | `0x01`: CAN 2.0 모드<br>`0x02`: CAN FD 모드 BRS OFF<br>`0x03`: CAN FD 모드 BRS ON<br>**이 명령을 보내면 데이터 출력이 즉시 정지합니다.** 새 모드로 출력을 재개하려면 반드시 이어서 TRANSMIT DATA 명령을 보내야 합니다([Data Transmission Procedure](#32-user-commands) 참조) |
 | SAMPLE RATE SET | `0x01`: 100Hz (Default)<br>`0x02`: 250Hz<br>`0x03`: 500Hz<br>`0x04`: 1000Hz |
-| IMU ADDITIONAL FRAME | `0x01`: OFF<br>`0x02`: ON — 켜면 현재 데이터타입과 무관하게 매 전송주기마다 가속도/자이로 프레임 추가 송신. `IMU_MPUXX50` 빌드에서만 동작(현재 기본 미탑재) |
+| IMU ADDITIONAL FRAME | `0x01`: OFF<br>`0x02`: 가속도만<br>`0x03`: 자이로만<br>`0x04`: 가속도+자이로 — 켜면 현재 데이터타입과 무관하게 매 전송주기마다 해당 프레임 추가 송신. `IMU_MPUXX50` 빌드에서만 동작(현재 기본 미탑재) |
 | TX CAN ID CONFIRM | `0x01`: TX CAN 2.0 ID 확인, 데이터 없음(DLC=0)으로 응답<br>`0x02`: TX CAN FD ID 확인, 데이터 없음(DLC=0)으로 응답 |
 | FACTORY RESET | RATE 100Hz(Default), Zero Bias(Default), TX CAN2.0 ID `0x230`(Default), TX CANFD ID `0x330`(Default) |
 | ERROR PACKET ON/OFF | `0x01`(또는 0x02 외 값): ON (기본) — 판정용 에러워드 2바이트를 데이터프레임 끝에 추가<br>`0x02`: OFF |
@@ -202,12 +177,12 @@ Torque[Nm] = Torque Output;
 
 최종 계산값은 **float**로 캐스팅해서 씁니다.
 
-#### IMU Additional Frame (Data[2]=0x09, AFT_RBY2-C 신규 — [3.2](#32-user-commands) `0x02` ON일 때만)
+#### IMU Additional Frame (Data[2]=0x09, AFT-C 신규 — [3.2](#32-user-commands) `0x02`~`0x04`일 때만)
 
-| INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] | data[6~7] |
+| INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] | 송신 조건(Data[3]) |
 |---|---|---|---|---|---|---|---|---|---|
-| AIMU (가속도) | 2.0: `can20ID`+3<br>FD: `canFDID`+3 | 8 | AccelX(LSB) | AccelX(MSB) | AccelY(LSB) | AccelY(MSB) | AccelZ(LSB) | AccelZ(MSB) | 패딩(0) |
-| GIMU (자이로) | 2.0: `can20ID`+4<br>FD: `canFDID`+4 | 8 | GyroX(LSB) | GyroX(MSB) | GyroY(LSB) | GyroY(MSB) | GyroZ(LSB) | GyroZ(MSB) | 패딩(0) |
+| AIMU (가속도) | 2.0: `can20ID`+3<br>FD: `canFDID`+3 | 6 | AccelX(LSB) | AccelX(MSB) | AccelY(LSB) | AccelY(MSB) | AccelZ(LSB) | AccelZ(MSB) | `0x02`, `0x04` |
+| GIMU (자이로) | 2.0: `can20ID`+4<br>FD: `canFDID`+4 | 6 | GyroX(LSB) | GyroX(MSB) | GyroY(LSB) | GyroY(MSB) | GyroZ(LSB) | GyroZ(MSB) | `0x03`, `0x04` |
 
 - 값은 raw int16 그대로(물리단위 환산 없음). 스케일: 가속도 ±16g = 2048 LSB/g, 자이로 ±2000dps = 16.4 LSB/(deg/s)
 - 현재 선택된 F/T 데이터타입([3.2](#32-user-commands) Data[2]=0x03)과 무관하게 독립적으로 켜고 끕니다.
