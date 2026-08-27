@@ -2,6 +2,11 @@
 
 Rev. 2026.08.27
 
+> 이 문서는 AIDIN ROBOTICS의 공식 AFT150-D50-C 매뉴얼([링크](https://aidin-robotics.gitbook.io/aidin-robotics-docs/index-manual/manual-ft-readme/manual-ft-aft150-d50))과
+> 동일한 형식으로 작성했습니다. 다만 이 저장소는 **펌웨어 소스 기준**으로 만든 문서라, 무게·치수·전압
+> 정격 같은 **기구/전기 스펙은 아직 확인되지 않아 비워두었습니다**(제품팀 확인 필요). CAN 통신 부분은
+> 펌웨어 소스(`app_freertos.c`, `fdcan.c`, `main.h`) 전수 대조로 작성해 정확도를 보장합니다.
+
 ## Foreword
 
 본 매뉴얼은 AIDIN ROBOTICS AFT_RBY2-C 센서의 정상적인 사용을 위해 필요한 정보를 담고 있습니다.
@@ -20,8 +25,10 @@ Rev. 2026.08.27
 - [1. Product Overview](#1-product-overview)
   - [1.1 AFT_RBY2-C](#11-aft_rby2-c)
   - [1.2 Key Features](#12-key-features)
+  - [1.3 Specifications](#13-specifications)
 - [2. Installation Guide](#2-installation-guide)
   - [2.1 Axes and Drawings](#21-axes-and-drawings)
+  - [2.2 Mounting / Cable](#22-mounting--cable)
 - [3. Communication](#3-communication)
   - [3.1 Default CAN Setting](#31-default-can-setting)
   - [3.2 User Commands](#32-user-commands)
@@ -44,6 +51,26 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 - 옵션: IMU(가속도/자이로) 부가 데이터 — [3.2](#32-user-commands) 참조
 - CAN IAP 부트로더 내장 — 케이블 하나로 펌웨어 현장 업데이트 가능
 
+### 1.3 Specifications
+
+| Index | Unit | Value |
+|---|---|---|
+| Operating voltage | VDC | *(확인 필요)* |
+| Max. safe excitation voltage | VDC | *(확인 필요)* |
+| Nominal force range (F_XYZN) | N | *(확인 필요)* |
+| Nominal torque range (M_XYZN) | Nm | *(확인 필요)* |
+| Limit force (F_XYZL) | N | *(확인 필요)* |
+| Limit torque (M_XYZL) | Nm | *(확인 필요)* |
+| Dimensions | mm | *(확인 필요)* |
+| Weight | g | *(확인 필요)* |
+| Temperature | °C | *(확인 필요)* |
+| Sample rate | Hz | 100 / 250 / 500 / 1000 (선택 가능, [3.2](#32-user-commands)) |
+| Interfaces | — | CAN 1 Mbit, CAN-FD nominal 1M / data 최대 4M |
+| MCU | — | STM32H523CET7 (Cortex-M33) |
+
+> 힘/토크 정격·치수·중량 등 기구 스펙은 이 저장소(펌웨어)에 없는 정보라 비워뒀습니다. 필요하시면
+> 제품팀 확인 후 채워드리겠습니다.
+
 ## 2. Installation Guide
 
 ### 2.1 Axes and Drawings
@@ -52,6 +79,10 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 
 센서 원점은 상판 중심, **X(적색)·Y(녹색)·Z(청색)**. CAN으로 나오는 Fx/Fy/Fz, Tx/Ty/Tz는
 전부 이 좌표계 기준입니다. 우측 그림은 하단 커넥터/체결 구조 참고용입니다.
+
+### 2.2 Mounting / Cable
+
+*(체결 토크, 케이블 길이·핀맵 등은 기구 도면 확인 후 추가 예정)*
 
 ## 3. Communication
 
@@ -215,4 +246,5 @@ PCAN-USB FD Device(USB to CAN FD)를 사용합니다. 다른 CAN 보드를 쓰�
 
 ---
 
-Rev. 2026.08.27
+이 문서는 2026-08-27 기준 펌웨어 소스 전수 대조로 작성했습니다(제품/기구 스펙 제외). 코드가
+바뀌면 이 문서도 같이 갱신해야 합니다.
