@@ -55,10 +55,10 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 
 | Index | Unit | Value |
 |---|---|---|
-| Operating voltage | VDC | *(확인 필요)* |
-| Max. safe excitation voltage | VDC | *(확인 필요)* |
-| Nominal force range (F_XYZN) | N | *(확인 필요)* |
-| Nominal torque range (M_XYZN) | Nm | *(확인 필요)* |
+| Operating voltage | VDC | 4~36 |
+| Max. safe excitation voltage | VDC | 40 |
+| Nominal force range (F_XYZN) | N | 500 |
+| Nominal torque range (M_XYZN) | Nm | 25 |
 | Limit force (F_XYZL) | N | *(확인 필요)* |
 | Limit torque (M_XYZL) | Nm | *(확인 필요)* |
 | Accuracy | %R.C. | *(확인 필요)* |
@@ -68,8 +68,8 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 | Crosstalk | %R.C. | *(확인 필요)* |
 | Resolution (Force) | N | *(확인 필요)* |
 | Resolution (Torque) | Nm | *(확인 필요)* |
-| Dimensions | mm | *(확인 필요)* |
-| Weight | g | *(확인 필요)* |
+| Dimensions | mm | D88 x H32.5 |
+| Weight | g | 350 |
 | Temperature | °C | *(확인 필요)* |
 | Sample rate | Hz | 100 / 250 / 500 / 1000 (선택 가능, [3.2](#32-user-commands)) |
 | Interfaces | — | CAN 1 Mbit, CAN-FD nominal 1M / data 최대 4M |
@@ -130,18 +130,14 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | TRANSMIT DATA | 〃 | 〃 | 〃 | `0x03` | `0x01`~`0x06` | — | — |
 | CAN MODE | 〃 | 〃 | 〃 | `0x04` | `0x01`~`0x03` | — | — |
 | SAMPLE RATE SET | 〃 | 〃 | 〃 | `0x05` | `0x01`~`0x04` | — | — |
-| FD PARAMETER SET | 〃 | 〃 | 〃 | `0x06` | `0x01`~`0x04` | — | — |
 | **IMU ADDITIONAL FRAME** *(AFT_RBY2-C 신규)* | 〃 | 〃 | 〃 | `0x09` | `0x01`(OFF) / `0x02`(ON) | — | — |
 | TX CAN ID CONFIRM | `0x220` `0x230` | `0xFF` | `0xFE` | `0xFC` | `0x01`(CAN2.0) / `0x02`(CAN FD) | — | — |
 | FACTORY RESET | 〃 | `0xFF` | `0xFE` | `0xFD` | — | — | — |
 | ERROR PACKET ON/OFF *(AFT_RBY2-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
-| ENTER BOOTLOADER *(AFT_RBY2-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFB` | `0x5A` | — | — |
-| LOG DUMP *(AFT_RBY2-C 신규, 8바이트 매직)* | 〃 | `0xF1` | `0xF2` | `0xF3` | `0xF4`(Data[4]=`0xFC` Data[5]=`0xFD` Data[6]=`0xFE` Data[7]=`0xFF`) | — | — |
-| CLEAR ERROR *(정의만 있음)* | 〃 | 〃 | 〃 | `0x07` | — | — | — |
-| GET STATUS *(정의만 있음)* | 〃 | 〃 | 〃 | `0x08` | — | — | — |
 
-> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT_RBY2-C에는 없습니다. `CLEAR ERROR`(0x07)와
-> `GET STATUS`(0x08)는 상수만 정의돼 있고 실제 처리 코드가 없어 **보내도 무시됩니다**.
+> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT_RBY2-C에는 없습니다. `FD PARAMETER SET`(0x06),
+> `CLEAR ERROR`(0x07), `GET STATUS`(0x08)는 상수만 정의돼 있고 실제 처리 코드가 없어 **보내도
+> 무시됩니다**.
 
 **COMMAND / Data[3] Description**
 
@@ -152,13 +148,10 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | TRANSMIT DATA | `0x01`: INT, 온도보상 없음<br>`0x02`: INT, 온도보상 포함<br>`0x03`: INT Combined, 온도보상 없음 (CAN 2.0 미지원, FD 전용)<br>`0x04`: INT Combined, 온도보상 포함 (FD 전용)<br>`0x05`: Float Combined, 온도보상 없음 (FD 전용)<br>`0x06`: Float Combined, 온도보상 포함 (FD 전용) |
 | CAN MODE | `0x01`: CAN 2.0 모드<br>`0x02`: CAN FD 모드 BRS OFF<br>`0x03`: CAN FD 모드 BRS ON |
 | SAMPLE RATE SET | `0x01`: 100Hz (Default)<br>`0x02`: 250Hz<br>`0x03`: 500Hz<br>`0x04`: 1000Hz |
-| FD PARAMETER SET | `0x01`: FDSET1<br>`0x02`: FDSET2<br>`0x03`: FDSET3 (Default)<br>`0x04`: FDSET4<br>⚠ **즉시 반영되지 않음** — [5장](#5-주의사항-known-issues) 참조 |
 | IMU ADDITIONAL FRAME | `0x01`: OFF<br>`0x02`: ON — 켜면 현재 데이터타입과 무관하게 매 전송주기마다 가속도/자이로 프레임 추가 송신. `IMU_MPUXX50` 빌드에서만 동작(현재 기본 미탑재) |
 | TX CAN ID CONFIRM | `0x01`: TX CAN 2.0 ID 확인, 데이터 없음(DLC=0)으로 응답<br>`0x02`: TX CAN FD ID 확인, 데이터 없음(DLC=0)으로 응답 |
-| FACTORY RESET | FDSET3(Default), RATE 100Hz(Default), Zero Bias(Default), TX CAN2.0 ID `0x230`(Default), TX CANFD ID `0x330`(Default) |
+| FACTORY RESET | RATE 100Hz(Default), Zero Bias(Default), TX CAN2.0 ID `0x230`(Default), TX CANFD ID `0x330`(Default) |
 | ERROR PACKET ON/OFF | `0x01`(또는 0x02 외 값): ON (기본) — 판정용 에러워드 2바이트를 데이터프레임 끝에 추가<br>`0x02`: OFF |
-| ENTER BOOTLOADER | 고정 매직 `0x5A` — TAMP 핸드셰이크 기록 후 리셋, CAN IAP 부트로더로 진입 |
-| LOG DUMP | 고정 8바이트 매직(`F1 F2 F3 F4 FC FD FE FF`) — 전송 멈추고 저장된 로그 전량을 CAN으로 덤프 |
 
 ### 3.3 Sensor Data Output
 
@@ -239,14 +232,8 @@ PCAN-USB FD Device(USB to CAN FD)를 사용합니다. 다른 CAN 보드를 쓰�
 
 ## 5. 주의사항 (Known Issues)
 
-> **FD Parameter Setting(`0x06`)은 즉시 반영되지 않습니다.**
-> 명령을 받으면 값만 저장하고, 실제 FDCAN 재설정 호출은 현재 코드에서 비활성화돼 있습니다.
-> **다음 재부팅 시** 저장된 값이 한 번 적용되는 구조입니다 — 런타임에 바로 타이밍이 바뀌길
-> 기대하면 안 됩니다.
-
-> **`CLEAR ERROR`(0x07) / `GET STATUS`(0x08)는 이름만 있고 미구현입니다.**
-> 상수 정의와 주석만 있고 대응하는 처리 코드가 없어 보내도 무시됩니다. 에러패킷 기능
-> (`ERRPKT_ENABLE`, 현재 `DISable`)이 켜지면서 같이 구현될 예정으로 추정 — 실사용 전 확인 필수.
+> **`FD Parameter Setting`(0x06) / `CLEAR ERROR`(0x07) / `GET STATUS`(0x08)는 미구현입니다.**
+> 상수 정의만 있고 대응하는 처리 코드가 없어(또는 비활성화돼 있어) 보내도 무시됩니다.
 
 > **`IMU ADDITIONAL FRAME`은 기본 빌드에 포함되지 않습니다.**
 > `IMU_MPUXX50` 빌드 토글이 꺼진(`DISable`) 상태에선 이 명령/프레임 자체가 존재하지 않습니다.
