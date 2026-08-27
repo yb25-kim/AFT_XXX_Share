@@ -103,10 +103,12 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 
 **Data Transmission Procedure**
 
-센서는 전원 인가만으로 자동 출력하지 않습니다. 데이터를 받으려면 **CAN MODE 설정 명령**을 보낸
-뒤 **TRANSMIT DATA 요청 명령**을 순서대로 보내야 합니다.
+AFT_RBY2-C는 전원 인가 직후 **별도 명령 없이 기본값(CAN 2.0, INT 온도보상 포함, TX ID `0x230`)으로
+자동 출력을 시작**합니다. 다른 모드/데이터타입으로 바꾸려면 **CAN MODE 설정 명령**을 보낸 뒤
+**TRANSMIT DATA 요청 명령**을 순서대로 보내면 됩니다 — CAN MODE 명령을 보내면 출력이 일단 멈추고,
+TRANSMIT DATA를 다시 보내야 재개됩니다.
 
-예시(기본 TX ID `0x230` 기준, CAN 2.0 모드로 온도보상 포함 INT 출력 시작):
+예시(기본 TX ID `0x230` 기준, CAN 2.0 모드로 온도보상 포함 INT 출력 다시 시작):
 ```
 CAN MODE:      ID 0x220,  Data: 0x30 0x02 0x04 0x01
 TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
