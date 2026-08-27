@@ -1,10 +1,10 @@
-# Force/Torque Sensor User Manual — AFT-C
+# Force/Torque Sensor User Manual — AFT_XXX-C
 
 Rev. 2026.08.27 (초기 버전)
 
 ## Foreword
 
-본 매뉴얼은 AIDIN ROBOTICS AFT-C 센서의 정상적인 사용을 위해 필요한 정보를 담고 있습니다.
+본 매뉴얼은 AIDIN ROBOTICS AFT_XXX-C 센서의 정상적인 사용을 위해 필요한 정보를 담고 있습니다.
 로봇 시스템을 사양 범위 밖에서 사용할 경우 제품의 기본 성능이 보장되지 않습니다. 사용 전 본
 매뉴얼을 주의 깊게 읽어 주십시오.
 
@@ -18,7 +18,7 @@ Rev. 2026.08.27 (초기 버전)
 ## 목차
 
 - [1. Product Overview](#1-product-overview)
-  - [1.1 AFT-C](#11-aft-c)
+  - [1.1 AFT_XXX-C](#11-aft_xxx-c)
   - [1.2 Key Features](#12-key-features)
 - [2. Installation Guide](#2-installation-guide)
   - [2.1 Axes and Drawings](#21-axes-and-drawings)
@@ -31,7 +31,7 @@ Rev. 2026.08.27 (초기 버전)
 
 ## 1. Product Overview
 
-### 1.1 AFT-C
+### 1.1 AFT_XXX-C
 
 AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capacitive) 방식을 사용합니다.
 로봇 손목/관절 등에 장착해 접촉력을 실시간으로 측정하는 용도입니다.
@@ -48,7 +48,7 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 
 ### 2.1 Axes and Drawings
 
-![AFT-C 좌표계](img/AFT_coordinate_frame.png)
+![AFT_XXX-C 좌표계](img/AFT_XXX_coordinate_frame.png)
 
 센서 원점은 상판 중심, **X(적색)·Y(녹색)·Z(청색)**. CAN으로 나오는 Fx/Fy/Fz, Tx/Ty/Tz는
 전부 이 좌표계 기준입니다. 우측 그림은 하단 커넥터/체결 구조 참고용입니다.
@@ -78,7 +78,7 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 
 **Data Transmission Procedure**
 
-AFT-C는 전원 인가 직후 **별도 명령 없이 기본값(CAN 2.0, INT 온도보상 포함, TX ID `0x230`)으로
+AFT_XXX-C는 전원 인가 직후 **별도 명령 없이 기본값(CAN 2.0, INT 온도보상 포함, TX ID `0x230`)으로
 자동 출력을 시작**합니다. 다른 모드/데이터타입으로 바꾸려면 **CAN MODE 설정 명령**을 보낸 뒤
 **TRANSMIT DATA 요청 명령**을 순서대로 보내면 됩니다 — **CAN MODE 명령은 데이터 출력을 정지(stop)시키는
 기능을 함께 가지고 있어**, 이 명령을 보내면 출력이 일단 멈추고 TRANSMIT DATA를 다시 보내야 재개됩니다.
@@ -98,12 +98,12 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | TRANSMIT DATA | 〃 | 〃 | 〃 | `0x03` | `0x01`~`0x06` | — | — |
 | CAN MODE *(데이터 출력 정지 동반)* | 〃 | 〃 | 〃 | `0x04` | `0x01`~`0x03` | — | — |
 | SAMPLE RATE SET | 〃 | 〃 | 〃 | `0x05` | `0x01`~`0x04` | — | — |
-| **IMU ADDITIONAL FRAME** *(AFT-C 신규)* | 〃 | 〃 | 〃 | `0x09` | `0x01`~`0x04` | — | — |
+| **IMU ADDITIONAL FRAME** *(AFT_XXX-C 신규)* | 〃 | 〃 | 〃 | `0x09` | `0x01`~`0x04` | — | — |
 | TX CAN ID CONFIRM | `0x220` `0x230` | `0xFF` | `0xFE` | `0xFC` | `0x01`(CAN2.0) / `0x02`(CAN FD) | — | — |
 | FACTORY RESET | 〃 | `0xFF` | `0xFE` | `0xFD` | — | — | — |
-| ERROR PACKET ON/OFF *(AFT-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
+| ERROR PACKET ON/OFF *(AFT_XXX-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
 
-> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT-C에는 없습니다. `FD PARAMETER SET`(0x06),
+> `SERIAL NUMBER CONFIRM`(AFT150에 있던 명령)은 AFT_XXX-C에는 없습니다. `FD PARAMETER SET`(0x06),
 > `CLEAR ERROR`(0x07), `GET STATUS`(0x08)는 상수만 정의돼 있고 실제 처리 코드가 없어 **보내도
 > 무시됩니다**.
 
@@ -177,7 +177,7 @@ Torque[Nm] = Torque Output;
 
 최종 계산값은 **float**로 캐스팅해서 씁니다.
 
-#### IMU Additional Frame (Data[2]=0x09, AFT-C 신규 — [3.2](#32-user-commands) `0x02`~`0x04`일 때만)
+#### IMU Additional Frame (Data[2]=0x09, AFT_XXX-C 신규 — [3.2](#32-user-commands) `0x02`~`0x04`일 때만)
 
 | INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] | 송신 조건(Data[3]) |
 |---|---|---|---|---|---|---|---|---|---|
