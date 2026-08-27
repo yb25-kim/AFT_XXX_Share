@@ -61,6 +61,13 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 | Nominal torque range (M_XYZN) | Nm | *(확인 필요)* |
 | Limit force (F_XYZL) | N | *(확인 필요)* |
 | Limit torque (M_XYZL) | Nm | *(확인 필요)* |
+| Accuracy | %R.C. | *(확인 필요)* |
+| Non-linearity | %R.C. | *(확인 필요)* |
+| Hysteresis | %R.C. | *(확인 필요)* |
+| Repeatability | %R.C. | *(확인 필요)* |
+| Crosstalk | %R.C. | *(확인 필요)* |
+| Resolution (Force) | N | *(확인 필요)* |
+| Resolution (Torque) | Nm | *(확인 필요)* |
 | Dimensions | mm | *(확인 필요)* |
 | Weight | g | *(확인 필요)* |
 | Temperature | °C | *(확인 필요)* |
