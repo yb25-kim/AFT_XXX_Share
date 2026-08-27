@@ -98,10 +98,10 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 | TRANSMIT DATA | 〃 | 〃 | 〃 | `0x03` | `0x01`~`0x06` | — | — |
 | CAN MODE *(데이터 출력 정지 동반)* | 〃 | 〃 | 〃 | `0x04` | `0x01`~`0x03` | — | — |
 | SAMPLE RATE SET | 〃 | 〃 | 〃 | `0x05` | `0x01`~`0x04` | — | — |
-| **IMU ADDITIONAL FRAME** *(AFT_XXX-C 신규)* | 〃 | 〃 | 〃 | `0x09` | `0x01`~`0x04` | — | — |
+| **IMU ADDITIONAL FRAME** *(New to AFT_XXX-C)* | 〃 | 〃 | 〃 | `0x09` | `0x01`~`0x04` | — | — |
 | TX CAN ID CONFIRM | `0x220` `0x230` | `0xFF` | `0xFE` | `0xFC` | `0x01`(CAN2.0) / `0x02`(CAN FD) | — | — |
 | FACTORY RESET | 〃 | `0xFF` | `0xFE` | `0xFD` | — | — | — |
-| ERROR PACKET ON/OFF *(AFT_XXX-C 신규)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
+| ERROR PACKET ON/OFF *(New to AFT_XXX-C)* | 〃 | `0xFF` | `0xFE` | `0xFA` | `0x01`(ON) / `0x02`(OFF) | — | — |
 
 **COMMAND / Data[3] Description**
 
@@ -173,7 +173,7 @@ Torque[Nm] = Torque Output;
 
 최종 계산값은 **float**로 캐스팅해서 씁니다.
 
-#### IMU Additional Frame (Data[2]=0x09, AFT_XXX-C 신규 — [3.2](#32-user-commands) `0x02`~`0x04`일 때만)
+#### IMU Additional Frame (Data[2]=0x09, New to AFT_XXX-C — [3.2](#32-user-commands) `0x02`~`0x04`일 때만)
 
 | INDEX | TX CAN ID | DLC | data[0] | data[1] | data[2] | data[3] | data[4] | data[5] | 송신 조건(Data[3]) |
 |---|---|---|---|---|---|---|---|---|---|
