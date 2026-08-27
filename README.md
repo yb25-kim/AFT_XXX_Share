@@ -29,7 +29,6 @@ Rev. 2026.08.27
   - [3.2 User Commands](#32-user-commands)
   - [3.3 Sensor Data Output](#33-sensor-data-output)
 - [4. Additional Information](#4-additional-information)
-- [5. 주의사항 (Known Issues)](#5-주의사항-known-issues)
 
 ## 1. Product Overview
 
@@ -221,14 +220,6 @@ PCAN-USB FD Device(USB to CAN FD)를 사용합니다. 다른 CAN 보드를 쓰�
 - Device Item number: IPEH-004022 — https://www.peak-system.com/PCAN-USB-FD.365.0.html?&L=1
 - PCAN-View (Windows 표시용 소프트웨어) — https://www.peak-system.com/PCAN-View.242.0.html?&L=1
 - CAN 데이터를 정상적으로 받으려면 CAN H / CAN L 사이에 **120Ω 종단저항**이 필요합니다.
-
-## 5. 주의사항 (Known Issues)
-
-> **`FD Parameter Setting`(0x06) / `CLEAR ERROR`(0x07) / `GET STATUS`(0x08)는 미구현입니다.**
-> 상수 정의만 있고 대응하는 처리 코드가 없어(또는 비활성화돼 있어) 보내도 무시됩니다.
-
-> **`IMU ADDITIONAL FRAME`은 기본 빌드에 포함되지 않습니다.**
-> `IMU_MPUXX50` 빌드 토글이 꺼진(`DISable`) 상태에선 이 명령/프레임 자체가 존재하지 않습니다.
 
 ---
 
