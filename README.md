@@ -109,7 +109,7 @@ TRANSMIT DATA: ID 0x220,  Data: 0x30 0x02 0x03 0x02
 |---|---|
 | SENSOR TX CAN ID SET | `0x01`: TX CAN 2.0 ID SET ex) ID(LSB)=0x23, ID(MSB)=0x01 → Resulting ID `0x123`<br>`0x02`: TX CAN FD ID SET ex) ID(LSB)=0x56, ID(MSB)=0x04 → Resulting ID `0x456` |
 | BIAS | Bias(Zero Setting) |
-| TRANSMIT DATA | `0x01`: INT, 온도보상 없음<br>`0x02`: INT, 온도보상 포함<br>`0x03`: INT Combined, 온도보상 없음 (CAN 2.0 미지원, FD 전용)<br>`0x04`: INT Combined, 온도보상 포함 (FD 전용)<br>`0x05`: Float Combined, 온도보상 없음 (FD 전용)<br>`0x06`: Float Combined, 온도보상 포함 (FD 전용) |
+| TRANSMIT DATA | `0x01`: INT, 온도보상 없음<br>`0x02`: INT, 온도보상 포함<br>`0x03`: INT Combined, 온도보상 없음 (CAN 2.0 미지원, FD 전용)<br>`0x04`: INT Combined, 온도보상 포함 (CAN 2.0 미지원, FD 전용)<br>`0x05`: Float Combined, 온도보상 없음 (CAN 2.0 미지원, FD 전용)<br>`0x06`: Float Combined, 온도보상 포함 (CAN 2.0 미지원, FD 전용) |
 | CAN MODE | `0x01`: CAN 2.0 모드<br>`0x02`: CAN FD 모드 BRS OFF<br>`0x03`: CAN FD 모드 BRS ON<br>**이 명령을 보내면 데이터 출력이 즉시 정지합니다.** 새 모드로 출력을 재개하려면 반드시 이어서 TRANSMIT DATA 명령을 보내야 합니다([Data Transmission Procedure](#32-user-commands) 참조) |
 | SAMPLE RATE SET | `0x01`: 100Hz (Default)<br>`0x02`: 250Hz<br>`0x03`: 500Hz<br>`0x04`: 1000Hz |
 | IMU ADDITIONAL FRAME | `0x01`: OFF<br>`0x02`: 가속도만<br>`0x03`: 자이로만<br>`0x04`: 가속도+자이로 — 켜면 현재 데이터타입과 무관하게 매 전송주기마다 해당 프레임 추가 송신 |
