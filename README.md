@@ -1,6 +1,6 @@
 # Force/Torque Sensor User Manual — AFT_XXX-C
 
-Rev. 2026.08.27 (초기 버전)
+Rev. 2026.09.14 (1.3 Specification 추가)
 
 ## Foreword
 
