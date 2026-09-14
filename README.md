@@ -56,7 +56,7 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 | Limit torque (T_xyz, Break) | Nm | 35 |
 | Dimensions | mm | D88 x H32.5 |
 | Temperature | ℃ | 10 ~ 50 |
-| Sample rate | Hz | 100 ~ 1000 |
+| Sample rate | Hz | 100 / 250 / 500 / 1000 |
 | Interface (Baud-rate) | CAN | 1,000 Kbps |
 
 ## 2. Installation Guide
@@ -76,7 +76,7 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 
 ### 3.1 Default CAN Setting
 
-- 출력 레이트는 100Hz~1000Hz로 변경 가능 — 방법은 [3.2](#32-user-commands) 참조
+- 출력 레이트는 100 / 250 / 500 / 1000Hz 중 선택 — 방법은 [3.2](#32-user-commands) 참조
 - **CAN 2.0**
   - Nominal bitrate: 1 Mbps
   - RX ID: `0x220`(명령), `0x230`(측정 기본, 변경 가능)
