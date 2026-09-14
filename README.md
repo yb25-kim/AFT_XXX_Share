@@ -20,6 +20,7 @@ Rev. 2026.08.27 (초기 버전)
 - [1. Product Overview](#1-product-overview)
   - [1.1 AFT_XXX-C](#11-aft_xxx-c)
   - [1.2 Key Features](#12-key-features)
+  - [1.3 Specification](#13-specification)
 - [2. Installation Guide](#2-installation-guide)
   - [2.1 Axes and Drawings](#21-axes-and-drawings)
   - [2.2 Mounting / Cable](#22-mounting--cable)
@@ -43,6 +44,20 @@ AIDIN ROBOTICS의 6축 힘/토크(Force/Torque) 센서로, 정전용량식(capac
 - 디지털 출력 통신 (CAN, CAN-FD)
 - 옵션: IMU(가속도/자이로) 부가 데이터 — [3.2](#32-user-commands) 참조
 - CAN IAP 부트로더 내장 — 케이블 하나로 펌웨어 현장 업데이트 가능
+
+### 1.3 Specification
+
+| Index | Unit | Value |
+|---|---|---|
+| Operating voltage | VDC | 12 ~ 24 |
+| Nominal force range (F_xyz, Normal) | N | 400 |
+| Nominal torque range (T_xyz, Normal) | Nm | 20 |
+| Limit force (F_xyz, Break) | N | 1000 |
+| Limit torque (T_xyz, Break) | Nm | 35 |
+| Dimensions | mm | D88 x H32.5 |
+| Temperature | ℃ | 10 ~ 50 |
+| Sample rate | Hz | 100 ~ 1000 |
+| Interface (Baud-rate) | CAN | 1,000 Kbps |
 
 ## 2. Installation Guide
 
