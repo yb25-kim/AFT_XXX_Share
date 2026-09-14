@@ -214,4 +214,5 @@ PCAN-USB FD Device(USB to CAN FD)를 사용합니다. 다른 CAN 보드를 쓰�
 ## Revision History
 
 - [Rev. 2026.09.14 18:41](https://github.com/yb25-kim/AFT_XXX_Share/blob/1ab77b8b069bdafadf0ef37d4f43e5293cd34b93/README.md) (1.3 Specification 사양표 추가)
+- [Rev. 2026.08.28 09:43](https://github.com/yb25-kim/AFT_XXX_Share/blob/4cbb6493f6c10f2db723f2372968c213548cc154/README.md) (Combined 모드 4종 'CAN 2.0 미지원, FD 전용' 표기 통일)
 - [Rev. 2026.08.27 18:46](https://github.com/yb25-kim/AFT_XXX_Share/blob/6808453cbb9887d049208d317094f287425fd2c3/README.md) (초기 버전)
