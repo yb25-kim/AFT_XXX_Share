@@ -1,6 +1,6 @@
 # Force/Torque Sensor User Manual — AFT_XXX-C
 
-Rev. 2026.09.28 (CAN ID 갱신 — 명령 0x225/0x325, 측정 0x280/0x380)
+Rev. 2026.09.28
 
 ## Foreword
 
@@ -215,6 +215,8 @@ PCAN-USB FD Device(USB to CAN FD)를 사용합니다. 다른 CAN 보드를 쓰�
 
 ## Revision History
 
-- [Rev. 2026.09.28 10:53](https://github.com/yb25-kim/AFT_XXX_Share/blob/fb6bb5a9dde121e14e35ec9a70b030dd52611546/README.md) (CAN ID 갱신 — 명령 0x225/0x325, 측정 0x280/0x380)
-- [Rev. 2026.09.14 19:00](https://github.com/yb25-kim/AFT_XXX_Share/blob/7532e2779b1fbca8261e089922ed066c3861a674/README.md) (1.3 Specification 추가)
-- [Rev. 2026.08.27 18:46](https://github.com/yb25-kim/AFT_XXX_Share/blob/6808453cbb9887d049208d317094f287425fd2c3/README.md) (초기 버전)
+| 날짜 | 내용 |
+|---|---|
+| 2026.09.28 | CAN ID 갱신 — 명령 0x225/0x325, 측정 0x280/0x380 (현재 버전) |
+| [2026.09.14](https://github.com/yb25-kim/AFT_XXX_Share/blob/7532e2779b1fbca8261e089922ed066c3861a674/README.md) | 1.3 Specification 추가 |
+| [2026.08.27](https://github.com/yb25-kim/AFT_XXX_Share/blob/6808453cbb9887d049208d317094f287425fd2c3/README.md) | 초기 버전 |
